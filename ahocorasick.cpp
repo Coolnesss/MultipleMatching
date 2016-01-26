@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 typedef long long ll;
 using namespace std;
-#define A 27
+#define A 256
 
 struct Node {
 	unordered_map<char, Node*> children;
@@ -23,14 +23,17 @@ Node* root = new Node('a');
 
 //Output matches of patterns and their positions in text
 void findPattern(string text) {
+	ll matches = 0;
 	Node* v = root;
 	for (int i = 0; i < text.length(); i++) {
 		while (!v->children.count(text[i])) v = v->fail;
 		v = v->children[text[i]];
 		for (auto& a : patterns[v]) {
-			cout << a << " found, ends at " << i << endl;
+			matches++;
+			//cout << a << " found, ends at " << i << '\n';
 		}
 	}
+	cout << "Found " << matches << " matches" << '\n';
 }
 
 
@@ -40,7 +43,7 @@ void buildFailFunction() {
 	Node* fallback = new Node('s');
 
 	for(int i = 0; i < A; i++) {
-		fallback->children[i+'a'] = root;
+		fallback->children[i] = root;
 	}
 	root->fail = fallback;
 
@@ -81,7 +84,7 @@ void addWord(string s) {
 }
 
 void buildTrie(vector<string> patterns) {
-	for (int i = 0; i < A; i++) root->addChild(i + 'a');
+	for (int i = 0; i < A; i++) root->addChild(i);
 	for (auto& a : patterns) addWord(a);
 }
 
@@ -90,16 +93,21 @@ int main() {
 	ios_base::sync_with_stdio(0);
 	cin.tie(0);
 	cout.tie(0);
-	cout << "Input text" << endl;
-	string text;
-	cin >> text;
 
+
+	ifstream in("english.50MB");
+	stringstream buffer;
+	buffer << in.rdbuf();
+	string text = buffer.str();
+	//string text = "lol";
 	int n;
+
 	cout << "How many words?" << endl;
 	cin >> n;
 
 	vector<string> matching;
 	matching.resize(n);
+
 	for (int i = 0; i < n; i++) {
 		string x;
 		cin >> x;
