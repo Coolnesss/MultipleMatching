@@ -4,16 +4,20 @@ using namespace std;
 #define A 256
 
 struct Node {
-	unordered_map<char, Node*> children;
-	char letter;
+	Node* children[A];
+	unsigned char letter;
 	Node* fail = NULL;
 
-	Node(char c) {
+	Node(unsigned char c) {
 		letter = c;
+		//cout << "lol" << endl;
+		for(int i = 0; i < A; i++) {
+			children[i] = 0;
+		}
 	}
 
-	Node* addChild(char c) {
-		if (!children.count(c))	children.insert({c, new Node(c)});
+	Node* addChild(unsigned char c) {
+		if (!children[c])	children[c] = new Node(c);
 		return children[c];
 	}
 };
@@ -22,22 +26,22 @@ unordered_map<Node*, set<string>> patterns;
 Node* root = new Node('a');
 
 //Output matches of patterns and their positions in text
-void findPattern(string text) {
+void findPattern(string& text) {
 	ll matches = 0;
 	Node* v = root;
+
 	for (int i = 0; i < text.length(); i++) {
-		while (!v->children.count(text[i])) v = v->fail;
-		v = v->children[text[i]];
-		for (auto& a : patterns[v]) {
-			matches++;
+		const unsigned char key = text[i];
+		while (!v->children[key]) v = v->fail;
+		v = v->children[key];
+		matches += patterns[v].size();
+		//for (const auto& a : patterns[v]) {
+			//matches++;
 			//cout << a << " found, ends at " << i << '\n';
-		}
+		//}
 	}
 	cout << "Found " << matches << " matches" << '\n';
 }
-
-
-
 
 void buildFailFunction() {
 	Node* fallback = new Node('s');
@@ -53,12 +57,12 @@ void buildFailFunction() {
 		Node* u = q.front();
 		q.pop();
 
-		for(auto& a : u->children) {
-			char c = a.first;
-			Node* v = a.second;
+		for(int c = 0; c < A; c++) {
+			Node* v = u->children[c];
+			if (!v) continue;
 			Node* w = u->fail;
 
-			while(!w->children.count(c)) w = w->fail;
+			while(!w->children[c]) w = w->fail;
 			v->fail = w->children[c];
 
 			for (auto& p : patterns[v->fail]) {
@@ -99,7 +103,6 @@ int main() {
 	stringstream buffer;
 	buffer << in.rdbuf();
 	string text = buffer.str();
-	//string text = "lol";
 	int n;
 
 	cout << "How many words?" << endl;
@@ -116,5 +119,6 @@ int main() {
 
 	buildTrie(matching);
 	buildFailFunction();
+	cout << "kek" << endl;
 	findPattern(text);
 }
