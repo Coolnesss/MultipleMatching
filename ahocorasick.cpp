@@ -34,11 +34,11 @@ void findPattern(string& text) {
 		const unsigned char key = text[i];
 		while (!v->children[key]) v = v->fail;
 		v = v->children[key];
-		matches += patterns[v].size();
-		//for (const auto& a : patterns[v]) {
-			//matches++;
-			//cout << a << " found, ends at " << i << '\n';
-		//}
+		if (patterns.find(v) != patterns.end()) {
+			for (const auto& a : patterns[v]) {
+				matches++;
+			}
+		}
 	}
 	cout << "Found " << matches << " matches" << '\n';
 }
@@ -106,19 +106,32 @@ int main() {
 	int n;
 
 	cout << "How many words?" << endl;
-	cin >> n;
+	//cin >> n;
 
 	vector<string> matching;
 	matching.resize(n);
 
-	for (int i = 0; i < n; i++) {
-		string x;
-		cin >> x;
-		matching[i] = x;
+	//for (int i = 0; i < n; i++) {
+	//	string x;
+	//	cin >> x;
+	//	matching[i] = x;
+	//}
+
+	//mt19937 rng(random_device{}());
+	//uniform_int_distribution<char> dist('a', 'z');
+
+
+
+	//matching.push_back("change");
+
+	srand(time(NULL));
+	for (int i = 0; i < 1000; i++) {
+		ll b = rand() % text.length()-1000;
+		matching.push_back(text.substr(b, 1000));
 	}
 
 	buildTrie(matching);
 	buildFailFunction();
-	cout << "kek" << endl;
+	cout << "Preprocessing done" << endl;
 	findPattern(text);
 }
