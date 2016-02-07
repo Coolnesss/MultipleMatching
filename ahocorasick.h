@@ -1,6 +1,5 @@
 #pragma once
 #include <string.h>
 #include <vector>
-void findPattern(string& text);
-void buildTrie(vector<string> patterns);
-void buildFailFunction();
+vector<pair<ll,ll>> findPattern(string& text);
+void preprocess_ac(vector<string> patterns);

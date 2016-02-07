@@ -10,7 +10,6 @@ struct Node {
 
 	Node(unsigned char c) {
 		letter = c;
-		//cout << "lol" << endl;
 		for(int i = 0; i < A; i++) {
 			children[i] = 0;
 		}
@@ -26,21 +25,24 @@ unordered_map<Node*, set<string>> patterns;
 Node* root = new Node('a');
 
 //Output matches of patterns and their positions in text
-void findPattern(string& text) {
+vector<pair<ll,ll>> findPattern(string& text) {
+	vector<pair<ll,ll>> output;
+
+
 	ll matches = 0;
 	Node* v = root;
 
 	for (int i = 0; i < text.length(); i++) {
-		const unsigned char key = text[i];
+		const int key = text[i];
 		while (!v->children[key]) v = v->fail;
 		v = v->children[key];
 		if (patterns.find(v) != patterns.end()) {
-			for (const auto& a : patterns[v]) {
-				matches++;
+			for (const string& a : patterns[v]) {
+				output.push_back({i-a.size()+1, a.size()});
 			}
 		}
 	}
-	cout << "Found " << matches << " matches" << '\n';
+	return output;
 }
 
 void buildFailFunction() {
@@ -90,4 +92,11 @@ void addWord(string s) {
 void buildTrie(vector<string> patterns) {
 	for (int i = 0; i < A; i++) root->addChild(i);
 	for (auto& a : patterns) addWord(a);
+}
+
+
+// Runs preprocessing required for AC: builds trie and fail function
+void preprocess_ac(vector<string> patterns) {
+	buildTrie(patterns);
+	buildFailFunction();
 }

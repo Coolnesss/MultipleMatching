@@ -21,38 +21,29 @@ int main() {
 		matching.push_back(text.substr(b, 1000));
 	}
 	ll ms,ms2;
-	
+
 	ms = chrono::duration_cast< chrono::milliseconds >(chrono::system_clock::now().time_since_epoch()).count();
-	buildTrie(matching);
-	buildFailFunction();
+	preprocess_ac(matching);
 	ms2 = chrono::duration_cast< chrono::milliseconds >(chrono::system_clock::now().time_since_epoch()).count();
 	cout << "Preprocessing done for Aho-Corasick" << endl;
 	cout << "It took " << ms2 - ms << " milliseconds." << endl;
-	
+
 	ms = chrono::duration_cast< chrono::milliseconds >(chrono::system_clock::now().time_since_epoch()).count();
-	findPattern(text);
+	vector<pair<ll,ll>> op = findPattern(text);
 	ms2 = chrono::duration_cast< chrono::milliseconds >(chrono::system_clock::now().time_since_epoch()).count();
 	cout << "Search phase done for Aho-Corasick" << endl;
 	cout << "It took " << ms2 - ms << " milliseconds." << endl;
-	
+
 	ms = chrono::duration_cast< chrono::milliseconds >(chrono::system_clock::now().time_since_epoch()).count();
 	buildHashStructure(text);
-	hashesWithLengths(matching); 
+	hashesWithLengths(matching);
 	ms2 = chrono::duration_cast< chrono::milliseconds >(chrono::system_clock::now().time_since_epoch()).count();
 	cout << "Preprocessing done for Karp-Rabin." << endl;
 	cout << "It took " << ms2 - ms << " milliseconds." << endl;
-	
+
 	ms = chrono::duration_cast< chrono::milliseconds >(chrono::system_clock::now().time_since_epoch()).count();
 	findPatterns(text, matching);
 	ms2 = chrono::duration_cast< chrono::milliseconds >(chrono::system_clock::now().time_since_epoch()).count();
 	cout << "Search phase done for Karp-Rabin." << endl;
 	cout << "It took " << ms2 - ms << " milliseconds." << endl;
-	
-	
-	
-	
-	
-	
-	
-	
 }
