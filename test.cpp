@@ -27,10 +27,10 @@ void load_random_patterns() {
 }
 
 void run_brute() {
-	for (string sub : random_patterns) {
+	for (string& sub : random_patterns) {
 		ll pos = text.find(sub, 0);
 		while(pos != string::npos) {
-			positions.push_back(pos);
+			if (find(positions.begin(), positions.end(), pos) == positions.end()) positions.push_back(pos);
 			pos = text.find(sub,pos+1);
 		}
 	}
@@ -40,9 +40,9 @@ void test_AC_with_english() {
 	preprocess_ac(random_patterns);
 	vector<pair<ll,ll>> output = findPattern(text);
 	for (ll occ : positions) {
-		bool ok = false;
+		bool ok = true;
 		for (pair<ll,ll> ac_occ : output) {
-			if (occ == ac_occ.first) ok = true;
+			if (occ == ac_occ.first) ok = false;
 		}
 			if (ok) cout << "AC FAIL, couldn't find " << occ << " from AC output" << endl;
 	}
@@ -52,21 +52,18 @@ void test_AC_with_english() {
 
 void test_KR_with_english() {
 	preprocess_KR(random_patterns, text);
-
 	vector<pair<ll,ll>> output = findPatterns(text, random_patterns);
-
 	for (ll occ : positions) {
-		cout << "KR FAIL: " <<  occ << endl;
-		bool ok = false;
-		for (pair<ll,ll> ac_occ : output) {
-			if (occ == ac_occ.first) ok = true;
+		bool ok = true;
+		for (pair<ll,ll> kr_occ : output) {
+			if (occ == kr_occ.first) ok = false;
 		}
 			if (ok) cout << "KR FAIL, couldn't find " << occ << " from KR output" << endl;
 	}
+
 	if (positions.size() != output.size()) {
 		cout << "KR FAIL: too many matches" << endl;
 	}
-	cout << "KR FAIL" << positions.size() << endl;
 	cout << "Karp-Rabin found " << output.size() << " matches" << endl;
 }
 
@@ -75,7 +72,6 @@ int main() {
 	load_text();
 	load_random_patterns();
 	run_brute();
-	cout << positions.size() << endl;
 	test_AC_with_english();
 	test_KR_with_english();
 	cout << "Brute force found " << positions.size() << " matches" << endl;
