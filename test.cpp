@@ -4,48 +4,79 @@ using namespace std;
 #include "karprabin.h"
 #include "ahocorasick.h"
 
+string text;
+vector<string> random_patterns;
+vector<ll> positions;
 
-// Search for 1000 length 1000 patterns that are randomly selected from text.
-// Compare with brute force
-void test_ac_with_english() {
+const ll PATTERN_LENGTH = 500;
+const ll PATTERN_AMOUNT = 2000;
+
+void load_text() {
 	ifstream in("test");
 	stringstream buffer;
 	buffer << in.rdbuf();
-	string text = buffer.str();
+	text = buffer.str();
+}
 
-	vector<string> patterns;
-
+void load_random_patterns() {
 	srand(time(NULL));
-	for (int i = 0; i < 1000; i++) {
-		ll b = rand() % (text.length()-1000);
-		patterns.push_back(text.substr(b, 100));
+	for (int i = 0; i < PATTERN_AMOUNT; i++) {
+		ll b = rand() % (text.length()-PATTERN_LENGTH-1);
+		random_patterns.push_back(text.substr(b, PATTERN_LENGTH));
 	}
+}
 
-	vector<ll> positions;
-
-	for (string sub : patterns) {
+void run_brute() {
+	for (string sub : random_patterns) {
 		ll pos = text.find(sub, 0);
 		while(pos != string::npos) {
 			positions.push_back(pos);
 			pos = text.find(sub,pos+1);
 		}
 	}
-
-	preprocess_ac(patterns);
-	vector<pair<ll,ll>> aho_corasick_output = findPattern(text);
-
-	for (ll occ : positions) {
-		bool ok = false;
-		for (pair<ll,ll> ac_occ : aho_corasick_output) {
-			if (occ == ac_occ.first) ok = true;
-		}
-			if (ok) cout << "FAIL, couldn't find " << occ << " from AC output" << endl;
-	}
-
-	cout << "Aho Corasick found " << aho_corasick_output.size() << " matches" << '\n';
-	cout << "Brute force found " << positions.size() << " matches" << endl;
 }
 
+void test_AC_with_english() {
+	preprocess_ac(random_patterns);
+	vector<pair<ll,ll>> output = findPattern(text);
+	for (ll occ : positions) {
+		bool ok = false;
+		for (pair<ll,ll> ac_occ : output) {
+			if (occ == ac_occ.first) ok = true;
+		}
+			if (ok) cout << "AC FAIL, couldn't find " << occ << " from AC output" << endl;
+	}
+
+	cout << "Aho Corasick found " << output.size() << " matches" << endl;
+}
+
+void test_KR_with_english() {
+	preprocess_KR(random_patterns, text);
+
+	vector<pair<ll,ll>> output = findPatterns(text, random_patterns);
+
+	for (ll occ : positions) {
+		cout << "KR FAIL: " <<  occ << endl;
+		bool ok = false;
+		for (pair<ll,ll> ac_occ : output) {
+			if (occ == ac_occ.first) ok = true;
+		}
+			if (ok) cout << "KR FAIL, couldn't find " << occ << " from KR output" << endl;
+	}
+	if (positions.size() != output.size()) {
+		cout << "KR FAIL: too many matches" << endl;
+	}
+	cout << "KR FAIL" << positions.size() << endl;
+	cout << "Karp-Rabin found " << output.size() << " matches" << endl;
+}
+
+
 int main() {
-	test_ac_with_english();
+	load_text();
+	load_random_patterns();
+	run_brute();
+	cout << positions.size() << endl;
+	test_AC_with_english();
+	test_KR_with_english();
+	cout << "Brute force found " << positions.size() << " matches" << endl;
 }

@@ -21,7 +21,7 @@ struct Node {
 	}
 };
 
-unordered_map<Node*, set<string>> patterns;
+unordered_map<Node*, set<string>> accept_states;
 Node* root = new Node('a');
 
 //Output matches of patterns and their positions in text
@@ -33,11 +33,11 @@ vector<pair<ll,ll>> findPattern(string& text) {
 	Node* v = root;
 
 	for (int i = 0; i < text.length(); i++) {
-		const int key = text[i];
+		const unsigned char key = text[i];
 		while (!v->children[key]) v = v->fail;
 		v = v->children[key];
-		if (patterns.find(v) != patterns.end()) {
-			for (const string& a : patterns[v]) {
+		if (accept_states.find(v) != accept_states.end()) {
+			for (const string& a : accept_states[v]) {
 				output.push_back({i-a.size()+1, a.size()});
 			}
 		}
@@ -67,8 +67,8 @@ void buildFailFunction() {
 			while(!w->children[c]) w = w->fail;
 			v->fail = w->children[c];
 
-			for (auto& p : patterns[v->fail]) {
-				patterns[v].insert(p);
+			for (auto& p : accept_states[v->fail]) {
+				accept_states[v].insert(p);
 			}
 			q.push(v);
 		}
@@ -80,12 +80,12 @@ void addWord(string s) {
 	Node* parent = root;
 	for(int i = 0; i < s.length(); i++) parent = parent->addChild(s[i]);
 
-	if (patterns.count(parent)) {
-		patterns[parent].insert(s);
+	if (accept_states.count(parent)) {
+		accept_states[parent].insert(s);
 	} else {
 		set<string> pattern;
 		pattern.insert(s);
-		patterns[parent] = pattern;
+		accept_states[parent] = pattern;
 	}
 }
 

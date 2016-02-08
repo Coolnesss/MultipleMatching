@@ -5,7 +5,7 @@ using namespace std;
 //ll A = 8932498438934831ll;
 //ll B = 8932498438934825ll;
 ll A = 999999997;
-ll B = 999999991; 
+ll B = 999999991;
 
 vector<ll> p;
 vector<ll> x;
@@ -21,14 +21,14 @@ void buildHashStructure(string& text) {
 	ll n = text.length();
 	p.resize(n);
 	x.resize(n);
-	
+
 	p[0] = text[0];
 	x[0] = 1;
-	
+
 	for(ll i = 1; i < n; i++) {
 		p[i] = ((p[i-1] * A) + text[i]) % B;
-		x[i] = (x[i-1] * A) % B; 
-	}	
+		x[i] = (x[i-1] * A) % B;
+	}
 }
 
 
@@ -44,15 +44,22 @@ void hashesWithLengths(vector<string>& patterns) {
 	}
 }
 
-void findPatterns(string& text, vector<string> patterns) {
-	ll matches = 0;
+vector<pair<ll,ll>> findPatterns(string& text, vector<string> patterns) {
+	vector<pair<ll,ll>> output;
+
 	for(ll i = 0; i < text.length(); i++) {
 		for (auto& a : hashValues) {
 			ll len = a.first;
 			unordered_set<ll>& hashes = a.second;
-			
-			if (i+len-1 < text.length() && hashes.count(subsequence(i, i+len-1))) matches++;
+			if (i+len-1 < text.length() && hashes.count(subsequence(i, i+len-1))) {
+					output.push_back({i, len});
+			}
 		}
 	}
-	cout << "Found " << matches << " matches." << endl;
+	return output;
+}
+
+void preprocess_KR(vector<string> patterns, string text) {
+	buildHashStructure(text);
+	hashesWithLengths(patterns);
 }

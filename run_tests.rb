@@ -3,12 +3,21 @@ def run_correctness_tests
   system(compile_command)
   output = `./a.out`
 
-  if output.include? "FAIL"
+  if output.include? "AC FAIL" or output.include? "Segmentation"
     puts output
-    puts "Correctness tests failed. Failures above."
+    puts "Aho-Corasick correctness tests failed. Failures above."
   else
-    puts "Correctness tests completed successfully."
+    puts "Aho-Corasick correctness tests completed successfully."
   end
+
+  if output.include? "KR FAIL" or output.include? "Segmentation"
+    puts output
+    puts "Karp-Rabin correctness tests failed. Failures above."
+  else
+    puts "Karp-Rabin correctness tests completed successfully."
+  end
+
+
 end
 
 run_correctness_tests if ARGV.include? "c"

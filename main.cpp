@@ -35,8 +35,8 @@ int main() {
 	cout << "It took " << ms2 - ms << " milliseconds." << endl;
 
 	ms = chrono::duration_cast< chrono::milliseconds >(chrono::system_clock::now().time_since_epoch()).count();
-	buildHashStructure(text);
-	hashesWithLengths(matching);
+	preprocess_KR(matching, text);
+
 	ms2 = chrono::duration_cast< chrono::milliseconds >(chrono::system_clock::now().time_since_epoch()).count();
 	cout << "Preprocessing done for Karp-Rabin." << endl;
 	cout << "It took " << ms2 - ms << " milliseconds." << endl;
