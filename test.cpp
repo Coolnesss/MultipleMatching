@@ -6,9 +6,9 @@ using namespace std;
 
 string text;
 vector<string> random_patterns;
-vector<ll> positions;
+vector<pair<ll,ll>> positions;
 
-const ll PATTERN_LENGTH = 500;
+const ll PATTERN_LENGTH_MAX = 500;
 const ll PATTERN_AMOUNT = 2000;
 
 void load_text() {
@@ -21,16 +21,22 @@ void load_text() {
 void load_random_patterns() {
 	srand(time(NULL));
 	for (int i = 0; i < PATTERN_AMOUNT; i++) {
-		ll b = rand() % (text.length()-PATTERN_LENGTH-1);
-		random_patterns.push_back(text.substr(b, PATTERN_LENGTH));
+		ll b = rand() % (text.length() - PATTERN_LENGTH_MAX - 1);
+		random_patterns.push_back(text.substr(b, 200+(rand() % PATTERN_LENGTH_MAX)));
 	}
 }
 
 void run_brute() {
 	for (string& sub : random_patterns) {
 		ll pos = text.find(sub, 0);
+		pair<ll,ll> match = {pos, sub.length()};
 		while(pos != string::npos) {
-			if (find(positions.begin(), positions.end(), pos) == positions.end()) positions.push_back(pos);
+
+			bool ok = true;
+			for(pair<ll,ll> a : positions) {
+				if (a == match) ok = false;
+			}
+			if (ok) positions.push_back({pos,sub.length()});
 			pos = text.find(sub,pos+1);
 		}
 	}
@@ -39,40 +45,37 @@ void run_brute() {
 void test_AC_with_english() {
 	preprocess_ac(random_patterns);
 	vector<pair<ll,ll>> output = findPattern(text);
-	for (ll occ : positions) {
-		bool ok = true;
-		for (pair<ll,ll> ac_occ : output) {
-			if (occ == ac_occ.first) ok = false;
-		}
-			if (ok) cout << "AC FAIL, couldn't find " << occ << " from AC output" << endl;
-	}
+	sort(positions.begin(), positions.end());
+	sort(output.begin(), output.end());
 
+	if (output != positions) cout << "AC FAIL" << endl;
 	cout << "Aho Corasick found " << output.size() << " matches" << endl;
 }
 
 void test_KR_with_english() {
 	preprocess_KR(random_patterns, text);
 	vector<pair<ll,ll>> output = findPatterns(text, random_patterns);
-	for (ll occ : positions) {
-		bool ok = true;
-		for (pair<ll,ll> kr_occ : output) {
-			if (occ == kr_occ.first) ok = false;
-		}
-			if (ok) cout << "KR FAIL, couldn't find " << occ << " from KR output" << endl;
-	}
 
-	if (positions.size() != output.size()) {
-		cout << "KR FAIL: too many matches" << endl;
-	}
+	sort(positions.begin(), positions.end());
+	sort(output.begin(), output.end());
+
+	if (output != positions) cout << "KR FAIL" << endl;
+
 	cout << "Karp-Rabin found " << output.size() << " matches" << endl;
 }
 
 
 int main() {
-	load_text();
-	load_random_patterns();
+	//load_text();
+	//load_random_patterns();
+	//text = "ch-.,'<<<123ange('̈́}‚ı$}[£}$@£$[change\\change";
+	text = "qqqasdaqqq";
+	random_patterns.push_back("asd");
+	random_patterns.push_back("asda");
+
+	cout << "Text and patterns loaded." << endl;
 	run_brute();
+	cout << "Brute force found " << positions.size() << " matches" << endl;
 	test_AC_with_english();
 	test_KR_with_english();
-	cout << "Brute force found " << positions.size() << " matches" << endl;
 }

@@ -2,14 +2,12 @@
 typedef long long ll;
 using namespace std;
 
-//ll A = 8932498438934831ll;
-//ll B = 8932498438934825ll;
 ll A = 999999997;
 ll B = 999999991;
 
 vector<ll> p;
 vector<ll> x;
-unordered_map<ll, unordered_set<ll>> hashValues;
+unordered_map<ll, unordered_map<ll, vector<ll>>> hashValues;
 
 ll subsequence(ll a, ll b) {
 	ll ret = p[b];
@@ -17,7 +15,7 @@ ll subsequence(ll a, ll b) {
 	return (ret + B) % B;
 }
 
-void buildHashStructure(string& text) {
+void buildHashStructure(const string& text) {
 	ll n = text.length();
 	p.resize(n);
 	x.resize(n);
@@ -32,34 +30,48 @@ void buildHashStructure(string& text) {
 }
 
 
-void hashesWithLengths(vector<string>& patterns) {
-	for (string& s : patterns) {
+void hashesWithLengths(const vector<string>& patterns) {
+	ll index = 0;
+	for (const string& s : patterns) {
 		ll len = s.length();
 		ll hash = 0;
 		for(int i = 0; i < len; i++) {
 			hash = hash * A + s[i];
 			hash %= B;
 		}
-		hashValues[len].insert(hash);
+		hashValues[len][hash].push_back(index);
+		index++;
 	}
 }
 
-vector<pair<ll,ll>> findPatterns(string& text, vector<string> patterns) {
+vector<pair<ll,ll>> findPatterns(const string& text,
+	 const vector<string>& patterns) {
 	vector<pair<ll,ll>> output;
 
 	for(ll i = 0; i < text.length(); i++) {
 		for (auto& a : hashValues) {
 			ll len = a.first;
-			unordered_set<ll>& hashes = a.second;
-			if (i+len-1 < text.length() && hashes.count(subsequence(i, i+len-1))) {
-					output.push_back({i, len});
+
+			if (i+len-1 >= text.length()) continue;
+			unordered_map<ll, vector<ll>>& hashes = a.second;
+			ll hash = subsequence(i, i+len-1);
+
+			if (hashes.count(hash)) {
+				vector<ll>& strings = hashes[hash];
+				for (ll j = 0; j < strings.size(); j++) {
+					if (patterns[strings[j]] == text.substr(i, len)) {
+						if(output.empty()) output.push_back({i, len});
+						else if (output[output.size()-1].first != i)
+						 output.push_back({i, len});
+					}
+				}
 			}
 		}
 	}
 	return output;
 }
 
-void preprocess_KR(vector<string> patterns, string text) {
+void preprocess_KR(const vector<string>& patterns, const string& text) {
 	buildHashStructure(text);
 	hashesWithLengths(patterns);
 }
