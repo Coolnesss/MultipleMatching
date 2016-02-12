@@ -22,7 +22,7 @@ void load_random_patterns() {
 	srand(time(NULL));
 	for (int i = 0; i < PATTERN_AMOUNT; i++) {
 		ll b = rand() % (text.length() - PATTERN_LENGTH_MAX - 1);
-		random_patterns.push_back(text.substr(b, 200+(rand() % PATTERN_LENGTH_MAX)));
+		random_patterns.push_back(text.substr(b, 200+(PATTERN_LENGTH_MAX)));
 	}
 }
 
@@ -31,12 +31,7 @@ void run_brute() {
 		ll pos = text.find(sub, 0);
 		pair<ll,ll> match = {pos, sub.length()};
 		while(pos != string::npos) {
-
-			bool ok = true;
-			for(pair<ll,ll> a : positions) {
-				if (a == match) ok = false;
-			}
-			if (ok) positions.push_back({pos,sub.length()});
+			positions.push_back({pos,sub.length()});
 			pos = text.find(sub,pos+1);
 		}
 	}
@@ -66,13 +61,8 @@ void test_KR_with_english() {
 
 
 int main() {
-	//load_text();
-	//load_random_patterns();
-	//text = "ch-.,'<<<123ange('̈́}‚ı$}[£}$@£$[change\\change";
-	text = "qqqasdaqqq";
-	random_patterns.push_back("asd");
-	random_patterns.push_back("asda");
-
+	load_text();
+	load_random_patterns();
 	cout << "Text and patterns loaded." << endl;
 	run_brute();
 	cout << "Brute force found " << positions.size() << " matches" << endl;

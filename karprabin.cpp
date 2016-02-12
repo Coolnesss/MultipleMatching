@@ -39,31 +39,26 @@ void hashesWithLengths(const vector<string>& patterns) {
 			hash = hash * A + s[i];
 			hash %= B;
 		}
+		hash = (hash += B) % B;
+
 		hashValues[len][hash].push_back(index);
 		index++;
 	}
 }
 
-vector<pair<ll,ll>> findPatterns(const string& text,
-	 const vector<string>& patterns) {
+vector<pair<ll,ll>> findPatterns(const string& text, const vector<string>& patterns) {
 	vector<pair<ll,ll>> output;
 
 	for(ll i = 0; i < text.length(); i++) {
 		for (auto& a : hashValues) {
 			ll len = a.first;
-
-			if (i+len-1 >= text.length()) continue;
 			unordered_map<ll, vector<ll>>& hashes = a.second;
 			ll hash = subsequence(i, i+len-1);
 
-			if (hashes.count(hash)) {
+			if (hashes.count(hash) && !hashes[hash].empty()) {
 				vector<ll>& strings = hashes[hash];
-				for (ll j = 0; j < strings.size(); j++) {
-					if (patterns[strings[j]] == text.substr(i, len)) {
-						if(output.empty()) output.push_back({i, len});
-						else if (output[output.size()-1].first != i)
-						 output.push_back({i, len});
-					}
+				for(ll index : strings) {
+					if (patterns[index] == text.substr(i, len)) output.push_back({i, len});
 				}
 			}
 		}

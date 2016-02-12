@@ -21,15 +21,12 @@ struct Node {
 	}
 };
 
-unordered_map<Node*, set<string>> accept_states;
+unordered_map<Node*, vector<string>> accept_states;
 Node* root = new Node('a');
 
 //Output matches of patterns and their positions in text
 vector<pair<ll,ll>> findPattern(string& text) {
 	vector<pair<ll,ll>> output;
-
-
-	ll matches = 0;
 	Node* v = root;
 
 	for (int i = 0; i < text.length(); i++) {
@@ -68,7 +65,7 @@ void buildFailFunction() {
 			v->fail = w->children[c];
 
 			for (auto& p : accept_states[v->fail]) {
-				accept_states[v].insert(p);
+				accept_states[v].push_back(p);
 			}
 			q.push(v);
 		}
@@ -79,21 +76,13 @@ void buildFailFunction() {
 void addWord(string s) {
 	Node* parent = root;
 	for(int i = 0; i < s.length(); i++) parent = parent->addChild(s[i]);
-
-	if (accept_states.count(parent)) {
-		accept_states[parent].insert(s);
-	} else {
-		set<string> pattern;
-		pattern.insert(s);
-		accept_states[parent] = pattern;
-	}
+	accept_states[parent].push_back(s);
 }
 
 void buildTrie(vector<string> patterns) {
 	for (int i = 0; i < A; i++) root->addChild(i);
 	for (auto& a : patterns) addWord(a);
 }
-
 
 // Runs preprocessing required for AC: builds trie and fail function
 void preprocess_ac(vector<string> patterns) {
