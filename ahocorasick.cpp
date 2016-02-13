@@ -1,8 +1,10 @@
 #include <bits/stdc++.h>
 typedef long long ll;
 using namespace std;
-#define A 256
+const short A = 256;
 
+// Represents a node in the AC-automaton. Contains information about its
+// children and its fail link.
 struct Node {
 	Node* children[A];
 	unsigned char letter;
@@ -21,6 +23,8 @@ struct Node {
 	}
 };
 
+// Represents the nodes in the AC-automaton that are accepting states,
+// contains the corresponding strings for each one
 unordered_map<Node*, vector<string>> accept_states;
 Node* root = new Node('a');
 
@@ -42,6 +46,7 @@ vector<pair<ll,ll>> findPattern(string& text) {
 	return output;
 }
 
+// Build AC-automaton fail function
 void buildFailFunction() {
 	Node* fallback = new Node('s');
 
@@ -72,19 +77,20 @@ void buildFailFunction() {
 	}
 }
 
-//Add string s to trie
+//Add string s to the AC-automaton / trie
 void addWord(string s) {
 	Node* parent = root;
 	for(int i = 0; i < s.length(); i++) parent = parent->addChild(s[i]);
 	accept_states[parent].push_back(s);
 }
 
+// Build the AC-automaton / trie
 void buildTrie(vector<string> patterns) {
 	for (int i = 0; i < A; i++) root->addChild(i);
 	for (auto& a : patterns) addWord(a);
 }
 
-// Runs preprocessing required for AC: builds trie and fail function
+// Run preprocessing required for AC: build trie and fail function of patterns
 void preprocess_ac(vector<string> patterns) {
 	buildTrie(patterns);
 	buildFailFunction();
