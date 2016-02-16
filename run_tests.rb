@@ -1,4 +1,4 @@
-$test_file = "english.50MB"
+$test_file = "english.200MB"
 
 def run_correctness_tests
   compile_command = "clang++ -std=c++11 -Ofast test.cpp ahocorasick.cpp karprabin.cpp"
@@ -34,7 +34,7 @@ def run_performance_tests
 
   puts "Running Aho-Corasick with fprofile-generate..."
   system("g++ -std=c++11 -fprofile-generate -Ofast performance.cpp ahocorasick.cpp karprabin.cpp")
-  `./a.out #{$test_file}`
+  `./a.out english.50MB`
 
   puts "Compiling with fprofile-use..."
   system("g++ -std=c++11 -fprofile-use -Ofast performance.cpp ahocorasick.cpp karprabin.cpp")
@@ -48,7 +48,7 @@ def run_performance_tests
 
   puts "Running Karp-Rabin with fprofile-generate..."
   system("g++ -std=c++11 -fprofile-generate -Ofast performance.cpp ahocorasick.cpp karprabin.cpp")
-  `./a.out #{$test_file}`
+  `./a.out english.50MB`
 
   puts "Compiling with fprofile-use..."
   system("g++ -std=c++11 -fprofile-use -Ofast performance.cpp ahocorasick.cpp karprabin.cpp")
