@@ -14,7 +14,7 @@ The text is then iterated through, and for each position we can check if any of 
 If the hash values indicate a match, it is checked with brute force to make sure it was not a collision.
 
 ## Testing
-Both algorithms are compared with the brute force search, and verified that the results are exactly the same. `test.cpp` is responsible for this.
+Both algorithms are compared with the brute force search, and verified that the results are exactly the same. `test.cpp` is responsible for this. To run the current tests, you need files "english.200MB" from http://pizzachili.dcc.uchile.cl/texts/nlang/
 
 ## Experiments
 Performance is checked by running the algorithms with big inputs. Testing also includes using `fprofile-generate` to make profiling data with a certain dataset, and then using `fprofile-use` to compile the program with the profiling data included for optimization. A ruby script handles testing.
